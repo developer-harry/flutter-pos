@@ -301,6 +301,14 @@ service cloud.firestore {
           && request.resource.data.role == resource.data.role
           && request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['name', 'email', 'phone', 'address', 'favorites'])
+          && (!request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['name'])
+            || (request.resource.data.name is string
+              && request.resource.data.name.size() > 0
+              && request.resource.data.name.size() <= 80))
+          && (!request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['email'])
+            || request.resource.data.email == request.auth.token.email)
           && (!request.resource.data.keys().hasAny(['phone'])
             || (request.resource.data.phone is string
               && request.resource.data.phone.size() <= 30))
